@@ -18,7 +18,7 @@ v=diag(v);
 v(v<0)=0;
 % get maximum eigenvalue
 lmax=max(v);
-
+%v=v/lmax;
 
 
 % create signal where first node is 1 rest of them zero
@@ -26,18 +26,41 @@ s=zeros(size(W,1),1);
 s(1)=1;
 
 % determine filter
-K=15;
-alpha=rand(K,1)-0.5;
+K=25;
 C=ones(size(W,1),1);
 for i=1:K-1
     C=[C v.^(i/5)];
 end
 C(isinf(C))=0;
+
+U=zeros(10000,100);
+S=zeros(100,10000);
+it=0;
+for i=1:100:10000
+    it=it+1;
+    for j=1:100
+        U(i:i+100-1,j)=u(:,j)*u(it,j);
+    end
+    S(it,i:i+100-1)=s';
+end
+
+
+
+A=S*U*C;
+
+% determine filter
+flt =exp(-20*v);
+% apply that filter on to graph signal
+sf=u*(flt.*(u'*s));
+
+alpha=pinv(A)*sf;
+
+
 flt=C*alpha;
 
 figure;plot(alpha);
 xlabel('coeff id');
-title('applied filter coeffs  \alpha');
+title('learned  filter coeffs  \alpha from first graph');
 
 
 % apply that filter on to graph signal
@@ -72,6 +95,7 @@ v=diag(v);
 % get maximum eigenvalue
 lmax=max(v);
 v(v<0)=0;
+%v=v/lmax;
 
 % create signal where first node is 1 rest of them zero
 s=zeros(size(WW,1),1);
@@ -90,11 +114,23 @@ flt=C*alpha;
 % apply that filter on to graph signal
 sf2=u*diag(flt)*u'*s;
 
+% determine filter
+flt =exp(-20*v);
+% apply that filter on to graph signal
+sf=u*diag(flt)*u'*s;
+
+
 
 G=gsp_graph(WW,coord2);
 %figure;gsp_plot_signal(G,s)
 %title('Input signal');
 figure;gsp_plot_signal(G,sf2)
-title('Filtered signal on second graph');
+title('Filtered signal on second graph by learned coeff');
 
+figure;gsp_plot_signal(G,sf)
+title('Filtered signal on second graph by standart filter');
+
+figure;plot(sf2);hold on;plot(sf,'r-')
+xlabel('node id')
+legend({'filter result by learned coeff','filter result by standart filter'})
 
