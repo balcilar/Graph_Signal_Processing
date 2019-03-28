@@ -50,3 +50,8 @@ xlabel('node id')
 ylabel('node signal value')
 legend({'original basis','spline basis'})
 
+G=gsp_graph(WW,coord2);
+figure;gsp_plot_signal(G,sf2)
+title('Filtered signal on second graph');
+
+
