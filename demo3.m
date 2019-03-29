@@ -27,7 +27,7 @@ s(1)=1;
 
 
 % determine filter
-flt =exp(-100*v/lmax);
+flt =exp(-100*v);
 
 % apply that filter on to graph signal
 sf=u*(flt.*(u'*s));

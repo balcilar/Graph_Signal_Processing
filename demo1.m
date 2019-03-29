@@ -43,7 +43,6 @@ v=diag(v);
 % get maximum eigenvalue
 lmax=max(v);
 
-
 % create arbitrary signal 
 s=randn(size(W,1),1);
 %s(50)=1;
